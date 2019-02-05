@@ -23,6 +23,8 @@ public class IdConstants {
 
   public static final String METER_VALUE_COUNTER = "counter";
 
+  public static final String METER_VALUE_HISTOGRAM = "histogram";
+
   public static final String METER_VALUE_TIMER = "timer";
 
   public static final String STATISTIC_VALUE_COUNT = "count";

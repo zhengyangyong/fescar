@@ -9,26 +9,27 @@ import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 import io.prometheus.client.exporter.HTTPServer;
 
-public class PrometheusPublisher extends Collector implements Collector.Describable {
+public class PrometheusPublisher extends Collector implements Collector.Describable, Publisher {
   private final HTTPServer server;
 
   private final Registry registry;
 
   public PrometheusPublisher() throws IOException {
-    this.server = new HTTPServer(9696, true);
     this.registry = new DefaultRegistry();
+    //TODO:configalbe port
+    this.server = new HTTPServer(9696, true);
+    this.register();
   }
 
   @Override
   public List<MetricFamilySamples> collect() {
     List<MetricFamilySamples> familySamples = new ArrayList<>();
     Iterable<Measurement> measurements = registry.measure();
-
     List<Sample> samples = new ArrayList<>();
     measurements.forEach(measurement -> samples.add(convertMeasurementToSample(measurement)));
 
     if (samples.size() != 0) {
-      familySamples.add(new MetricFamilySamples("Fescar Metrics", Type.UNTYPED, "Fescar Metrics", samples));
+      familySamples.add(new MetricFamilySamples("fescar", Type.UNTYPED, "fescar", samples));
     }
 
     return familySamples;
@@ -48,5 +49,10 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
   @Override
   public List<MetricFamilySamples> describe() {
     return collect();
+  }
+
+  @Override
+  public void close() {
+    server.stop();
   }
 }

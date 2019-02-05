@@ -7,5 +7,7 @@ public interface Registry {
 
   Timer getTimer(Id id);
 
+  Histogram getHistogram(Id id);
+
   Iterable<Measurement> measure();
 }

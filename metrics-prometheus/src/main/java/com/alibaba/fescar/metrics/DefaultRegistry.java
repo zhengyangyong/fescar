@@ -29,12 +29,17 @@ public class DefaultRegistry implements Registry {
   }
 
   @Override
+  public Histogram getHistogram(Id id) {
+    return (Histogram) DefaultRegistry.meters.computeIfAbsent(id.getId(), key -> new DefaultHistogram(id));
+  }
+
+  @Override
   public Iterable<Measurement> measure() {
     List<Measurement> measurements = new ArrayList<>();
-    if (meters.size() == 0) {
+    if (DefaultRegistry.meters.size() == 0) {
       return measurements;
     }
-    meters.values().iterator().forEachRemaining(meter -> meter.measure().forEach(measurements::add));
+    DefaultRegistry.meters.values().iterator().forEachRemaining(meter -> meter.measure().forEach(measurements::add));
     return measurements;
   }
 }

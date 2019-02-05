@@ -1,6 +1,6 @@
 package com.alibaba.fescar.metrics;
 
-public class CounterValue {
+public class HistogramValue {
   private final long count;
 
   private final long total;
@@ -13,20 +13,20 @@ public class CounterValue {
     return total;
   }
 
-  public CounterValue() {
+  public HistogramValue() {
     this(0, 0);
   }
 
-  public CounterValue(long count, long total) {
+  public HistogramValue(long count, long total) {
     this.count = count;
     this.total = total;
   }
 
-  public CounterValue increment() {
+  public HistogramValue increment() {
     return this.increment(1);
   }
 
-  public CounterValue increment(long value) {
-    return new CounterValue(count + 1, total + value);
+  public HistogramValue increment(long value) {
+    return new HistogramValue(count + 1, total + value);
   }
 }
