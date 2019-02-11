@@ -107,24 +107,30 @@ public class DefaultCoordinator extends AbstractTCInboundHandler
   @Override
   protected void doGlobalCommit(GlobalCommitRequest request, GlobalCommitResponse response, RpcContext rpcContext)
       throws TransactionException {
+    GlobalSession globalSession = SessionHolder.findGlobalSession(request.getTransactionId());
     response.setGlobalStatus(core.commit(XID.generateXID(request.getTransactionId())));
+    long duration = System.currentTimeMillis() - globalSession.getBeginTime();
 
     if (registry != null) {
       registry.getCounter(MeterIdConstants.COUNTER_ACTIVE).increment(-1);
       registry.getCounter(MeterIdConstants.COUNTER_COMMITTED).increment();
       registry.getHistogram(MeterIdConstants.HISTOGRAM_COMMITTED).increment();
+      registry.getTimer(MeterIdConstants.TIMER_COMMITTED).record(duration,TimeUnit.MILLISECONDS);
     }
   }
 
   @Override
   protected void doGlobalRollback(GlobalRollbackRequest request, GlobalRollbackResponse response,
       RpcContext rpcContext) throws TransactionException {
+    GlobalSession globalSession = SessionHolder.findGlobalSession(request.getTransactionId());
     response.setGlobalStatus(core.rollback(XID.generateXID(request.getTransactionId())));
+    long duration = System.currentTimeMillis() - globalSession.getBeginTime();
 
     if (registry != null) {
       registry.getCounter(MeterIdConstants.COUNTER_ACTIVE).increment(-1);
       registry.getCounter(MeterIdConstants.COUNTER_ROLLBACK).increment();
       registry.getHistogram(MeterIdConstants.HISTOGRAM_ROLLBACK).increment();
+      registry.getTimer(MeterIdConstants.TIMER_ROLLBACK).record(duration,TimeUnit.MILLISECONDS);
     }
   }
 

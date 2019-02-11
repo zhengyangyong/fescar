@@ -32,7 +32,7 @@ public class TimerValue {
   }
 
   public TimerValue record(long value, TimeUnit unit) {
-    long changeValue = unit.convert(value, TimeUnit.MILLISECONDS);
+    long changeValue = unit == TimeUnit.MILLISECONDS ? value : TimeUnit.MILLISECONDS.convert(value, unit);
     return new TimerValue(count + 1, total + changeValue,
         changeValue > max ? changeValue : max);
   }
